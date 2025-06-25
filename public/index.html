@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Downloader - ดาวน์โหลดวิดีโอจากทุกแพลตฟอร์ม</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Video Downloader</h1>
+            <p>ดาวน์โหลดวิดีโอจาก YouTube, TikTok, Facebook และอื่นๆ</p>
+        </header>
+
+        <main>
+            <!-- ส่วนใส่ URL -->
+            <div class="input-section">
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    placeholder="วาง URL วิดีโอที่นี่ (เช่น https://www.tiktok.com/@username/video/...)"
+                    class="url-input"
+                >
+                <button id="checkBtn" class="btn btn-primary">
+                    ตรวจสอบวิดีโอ
+                </button>
+            </div>
+
+            <!-- แสดงสถานะ -->
+            <div id="status" class="status hidden"></div>
+
+            <!-- แสดงข้อมูลวิดีโอ -->
+            <div id="videoInfo" class="video-info hidden">
+                <div class="video-preview">
+                    <img id="thumbnail" src="" alt="Video thumbnail">
+                    <div class="video-details">
+                        <h3 id="videoTitle"></h3>
+                        <p>แพลตฟอร์ม: <span id="platform"></span></p>
+                        <p>ความยาว: <span id="duration"></span></p>
+                    </div>
+                </div>
+                
+                <div class="download-options">
+                    <h4>เลือกคุณภาพ:</h4>
+                    <div class="quality-buttons">
+                        <button class="btn btn-download" data-quality="best">
+                            📹 วิดีโอคุณภาพดีที่สุด
+                        </button>
+                        <button class="btn btn-download" data-quality="audio">
+                            🎵 เฉพาะเสียง (MP3)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading spinner -->
+            <div id="loader" class="loader hidden">
+                <div class="spinner"></div>
+                <p>กำลังประมวลผล...</p>
+            </div>
+        </main>
+
+        <footer>
+            <div class="supported-platforms">
+                <h4>รองรับแพลตฟอร์ม:</h4>
+                <div class="platforms">
+                    <span class="platform-badge">YouTube</span>
+                    <span class="platform-badge">TikTok</span>
+                    <span class="platform-badge">Facebook</span>
+                    <span class="platform-badge">Instagram</span>
+                    <span class="platform-badge">Twitter/X</span>
+                </div>
+            </div>
+            <p class="disclaimer">
+                ⚠️ โปรดเคารพลิขสิทธิ์และใช้เพื่อการศึกษาเท่านั้น
+            </p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
