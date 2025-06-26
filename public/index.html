@@ -133,7 +133,7 @@
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
             -webkit-background-clip: text;
-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
             line-height: 1.2;
@@ -598,16 +598,16 @@ background-clip: text;
                     </div>
                     
                     <div class="download-options">
-                        <h4>เลือกสิ่งที่ต้องการ:</h4>
+                        <h4>Choose action:</h4>
                         <div class="action-buttons">
                             <button class="btn btn-download" data-quality="best">
-                                📹 ดาวน์โหลดวิดีโอ (คุณภาพดีที่สุด)
+                                📹 Download Video (Best Quality)
                             </button>
                             <button class="btn btn-download" data-quality="audio">
-                                🎵 ดาวน์โหลดเสียง (MP3)
+                                🎵 Download Audio (MP3)
                             </button>
                             <button class="btn btn-gemini" id="analyzeBtn">
-                                ✨ วิเคราะห์ด้วย Gemini AI
+                                ✨ Analyze with Gemini AI
                             </button>
                         </div>
                     </div>
@@ -642,15 +642,136 @@ background-clip: text;
     <!-- Gemini Modal -->
     <div id="geminiModal" class="modal">
         <div class="modal-content">
-            <h3>🤖 ส่งวิดีโอไปวิเคราะห์ด้วย Gemini AI</h3>
-            <p style="margin-bottom: 1rem; opacity: 0.8;">ใส่คำถามหรือสิ่งที่ต้องการให้ AI วิเคราะห์:</p>
-            <textarea id="geminiPrompt" placeholder="เช่น: สรุปเนื้อหาวิดีโอนี้, วิเคราะห์อารมณ์ของผู้พูด, แปลคำบรรยาย..."></textarea>
+            <h3>🤖 Analyze Video with Gemini AI</h3>
+            <p style="margin-bottom: 1rem; opacity: 0.8;">Choose what you want AI to do:</p>
+            
+            <!-- Quick Options -->
+            <div class="gemini-quick-options" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1rem;">
+                <button class="quick-option-btn special" onclick="setGeminiPrompt('Analyze and create prompt to replicate this video style. Include all visual elements, transitions, effects. If there is speech, translate to Thai. All other instructions in English.')" style="grid-column: span 2;">
+                    🎥 วิเคราะห์และสร้าง Prompt เลียนแบบ
+                </button>
+                <button class="quick-option-btn" onclick="setGeminiPrompt('Summarize this video content with key points and main ideas')">
+                    📝 Summarize Content
+                </button>
+                <button class="quick-option-btn" onclick="setGeminiPrompt('Analyze filming techniques, camera angles, lighting, colors, and editing style')">
+                    🎬 Analyze Techniques
+                </button>
+                <button class="quick-option-btn" onclick="setGeminiPrompt('Create storyboard with 10 scenes from this video with descriptions')">
+                    📋 Create Storyboard
+                </button>
+                <button class="quick-option-btn" onclick="setGeminiPrompt('Analyze what makes this video popular - hook, thumbnail, SEO strategies')">
+                    📊 Analyze Popularity
+                </button>
+                <button class="quick-option-btn" onclick="setGeminiPrompt('Translate all speech/narration to Thai with context and meaning')">
+                    🌐 Translate Speech
+                </button>
+                <button class="quick-option-btn" onclick="setGeminiPrompt('Create 10 new video script variations based on this concept')">
+                    💡 Generate Scripts
+                </button>
+            </div>
+            
+            <h4 style="margin: 1rem 0 0.5rem; color: #a5b4fc;">📺 Prompt Templates for Video Creation:</h4>
+            <div style="display: grid; gap: 8px; margin-bottom: 1rem;">
+                <button class="template-btn" onclick="setGeminiPrompt('Create detailed prompt for AI video generation:\n1. Analyze visual style, color grading, transitions\n2. Break down into 10-15 scenes with timestamps\n3. Suggest camera movements and angles\n4. Provide editing rhythm and pacing\n5. If there is narration, translate to Thai\n6. Give exact prompts for Runway ML Gen-2')">
+                    🎯 Runway ML Prompt
+                </button>
+                <button class="template-btn" onclick="setGeminiPrompt('Create prompts for Midjourney/Stable Diffusion to make:\n1. Thumbnail similar to this video\n2. 5 key visuals from important scenes\n3. Style reference with parameters\n4. If text in images, translate to Thai')">
+                    🖼️ AI Image Prompt
+                </button>
+                <button class="template-btn" onclick="setGeminiPrompt('Analyze and create:\n1. Shot list with duration for each scene\n2. B-roll footage needed\n3. Sound effects and BGM style\n4. Transition effects used\n5. Translate speech/subtitles to Thai')">
+                    🎞️ Production Guide
+                </button>
+            </div>
+            
+            <textarea id="geminiPrompt" placeholder="Or type your own instructions..." style="min-height: 100px;"></textarea>
+            
+            <div style="margin: 1rem 0; padding: 1rem; background: rgba(236, 72, 153, 0.1); border-radius: 12px; border: 1px solid rgba(236, 72, 153, 0.3);">
+                <p style="margin: 0; font-size: 0.9rem; color: #f9a8d4;">
+                    🎬 <strong>How to use Gemini (Free):</strong><br>
+                    1. Download video first (max 10 minutes)<br>
+                    2. Click "Send to Gemini"<br>
+                    3. Upload video file in Gemini.google.com<br>
+                    4. Paste the copied prompt<br>
+                    <small style="opacity: 0.8;">💡 Tip: For long videos, trim to important parts only</small>
+                </p>
+            </div>
+            
             <div class="modal-buttons">
-                <button class="btn" onclick="closeGeminiModal()" style="background: rgba(255,255,255,0.1);">ยกเลิก</button>
-                <button class="btn btn-primary" onclick="sendToGemini()">ส่งวิเคราะห์</button>
+                <button class="btn" onclick="closeGeminiModal()" style="background: rgba(255,255,255,0.1);">Cancel</button>
+                <button class="btn btn-primary" onclick="sendToGemini()">
+                    <span>🚀 Send to Gemini (Free!)</span>
+                </button>
             </div>
         </div>
     </div>
+    
+    <style>
+        .quick-option-btn {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+        
+        .quick-option-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .quick-option-btn.special {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(99, 102, 241, 0.2));
+            border-color: rgba(236, 72, 153, 0.3);
+            font-weight: 600;
+        }
+        
+        .quick-option-btn.special:hover {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(99, 102, 241, 0.3));
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
+        }
+        
+        .template-btn {
+            padding: 10px 15px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            color: #c7d2fe;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+        
+        .template-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .modal-content {
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 4px;
+        }
+    </style>
 
     <script>
         // Create animated particles
@@ -724,7 +845,7 @@ background-clip: text;
                 if (result.success) {
                     currentVideoInfo = result.data;
                     showVideoInfo(result.data);
-                    showStatus('✅ พบวิดีโอแล้ว! เลือกสิ่งที่ต้องการทำ', 'success');
+                    showStatus('✅ Video found! Choose what you want to do', 'success');
                 } else {
                     showStatus(result.error || 'ไม่สามารถดึงข้อมูลวิดีโอได้', 'error');
                 }
@@ -811,25 +932,77 @@ background-clip: text;
         function closeGeminiModal() {
             document.getElementById('geminiModal').style.display = 'none';
         }
+        
+        function setGeminiPrompt(prompt) {
+            document.getElementById('geminiPrompt').value = prompt;
+        }
 
         async function sendToGemini() {
             const prompt = document.getElementById('geminiPrompt').value.trim();
             if (!prompt) {
-                alert('กรุณาใส่คำถามหรือคำสั่งสำหรับ AI');
+                alert('Please enter instructions or select a quick option');
                 return;
             }
 
-            // สร้าง URL สำหรับ Gemini
-            // หมายเหตุ: ผู้ใช้ต้องมี API key ของ Gemini
-            const geminiUrl = `https://aistudio.google.com/app/prompts/new_chat`;
-            const message = `วิเคราะห์วิดีโอนี้: ${currentVideoUrl}\n\nชื่อ: ${currentVideoInfo.title}\nแพลตฟอร์ม: ${currentVideoInfo.platform}\nความยาว: ${formatDuration(currentVideoInfo.duration)}\n\nคำถาม/คำสั่ง: ${prompt}`;
-            
-            // Copy to clipboard
-            navigator.clipboard.writeText(message).then(() => {
-                alert('คัดลอกข้อมูลแล้ว! กำลังเปิด Gemini AI...\n\nวางข้อความที่คัดลอกใน Gemini เพื่อเริ่มการวิเคราะห์');
-                window.open(geminiUrl, '_blank');
+            // สร้างข้อความสำหรับ Gemini แบบละเอียด
+            const fullMessage = `🎬 วิเคราะห์วิดีโอจาก URL นี้:
+${currentVideoUrl}
+
+📋 ข้อมูลวิดีโอ:
+- ชื่อ: ${currentVideoInfo.title}
+- แพลตฟอร์ม: ${currentVideoInfo.platform}
+- ความยาว: ${formatDuration(currentVideoInfo.duration)}
+- ลิงก์ตรง: ${currentVideoUrl}
+
+🤖 คำสั่ง/คำถาม:
+${prompt}`;
+
+            try {
+                // คัดลอกข้อความ
+                await navigator.clipboard.writeText(fullMessage);
+                
+                // แสดงข้อความสำเร็จ
+                showStatus('✅ คัดลอกข้อมูลแล้ว! กำลังเปิด Gemini AI...', 'success');
+                
+                // เปิด Gemini AI Studio (ฟรี)
+                window.open('https://gemini.google.com/app', '_blank');
+                
+                // แสดงคำแนะนำ
+                setTimeout(() => {
+                    alert(`✅ คัดลอกข้อมูลเรียบร้อยแล้ว!
+
+📝 ขั้นตอนต่อไป:
+1. หน้า Gemini AI เปิดขึ้นมาแล้ว
+2. คลิกในช่องพิมพ์ข้อความ
+3. กด Ctrl+V (หรือ Cmd+V บน Mac) เพื่อวาง
+4. กด Enter เพื่อส่ง
+
+💡 Gemini จะวิเคราะห์วิดีโอให้คุณทันที!`);
+                }, 500);
+                
                 closeGeminiModal();
-            });
+                
+            } catch (err) {
+                console.error('Copy failed:', err);
+                // ถ้าคัดลอกไม่ได้ ให้แสดงข้อความให้คัดลอกเอง
+                const textArea = document.createElement('textarea');
+                textArea.value = fullMessage;
+                textArea.style.position = 'fixed';
+                textArea.style.top = '50%';
+                textArea.style.left = '50%';
+                textArea.style.transform = 'translate(-50%, -50%)';
+                textArea.style.width = '80%';
+                textArea.style.height = '300px';
+                textArea.style.zIndex = '9999';
+                document.body.appendChild(textArea);
+                textArea.select();
+                
+                alert('กรุณาคัดลอกข้อความด้วยตนเอง (Ctrl+C) แล้วกด OK');
+                
+                textArea.remove();
+                window.open('https://gemini.google.com/app', '_blank');
+                closeGeminiModal();
+            }
         }
 
         // Utility functions
@@ -843,6 +1016,11 @@ background-clip: text;
                     'instagram.com',
                     'twitter.com', 'x.com'
                 ];
+                
+                // ตรวจสอบ YouTube Shorts โดยเฉพาะ
+                if (url.hostname.includes('youtube.com') && url.pathname.includes('/shorts/')) {
+                    return true;
+                }
                 
                 return supportedDomains.some(domain => url.hostname.includes(domain));
             } catch (_) {
