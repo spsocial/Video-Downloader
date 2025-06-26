@@ -3,81 +3,907 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Downloader - ดาวน์โหลดวิดีโอจากทุกแพลตฟอร์ม</title>
-    <link rel="stylesheet" href="style.css">
+    <title>VideoAI Pro (Prompt D) - ดาวน์โหลดและวิเคราะห์วิดีโอด้วย AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --dark: #1e1b4b;
+            --light: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0c29;
+            background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--light);
+            overflow-x: hidden;
+        }
+
+        /* เพิ่ม background image overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><defs><filter id="blur"><feGaussianBlur stdDeviation="80"/></filter></defs><circle cx="200" cy="200" r="300" fill="%236366f1" opacity="0.1" filter="url(%23blur)"/><circle cx="1700" cy="300" r="250" fill="%238b5cf6" opacity="0.1" filter="url(%23blur)"/><circle cx="1000" cy="800" r="400" fill="%23ec4899" opacity="0.1" filter="url(%23blur)"/></svg>');
+            background-size: cover;
+            z-index: -1;
+        }
+
+        /* Animated particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(100vh) translateX(0);
+            }
+            to {
+                transform: translateY(-100px) translateX(100px);
+            }
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Logo */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--light);
+            text-decoration: none;
+        }
+
+        .logo svg {
+            width: 40px;
+            height: 40px;
+            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 2rem 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: fadeInUp 1s ease 0.2s backwards;
+        }
+
+        /* Input Section */
+        .input-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .url-input {
+            flex: 1;
+            padding: 1.25rem 1.5rem;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .url-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 1.25rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            margin: 0.5rem;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-gemini {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-gemini:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+        }
+
+        /* Status Messages */
+        .status {
+            padding: 1.25rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            animation: slideIn 0.5s ease;
+        }
+
+        .status.success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #6ee7b7;
+        }
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+
+        /* Video Info Card */
+        .video-info {
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .video-preview {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #thumbnail {
+            width: 280px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .video-details h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .video-details p {
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .video-details .icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        /* Download Options */
+        .download-options {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+        }
+
+        .download-options h4 {
+            margin-bottom: 1rem;
+            color: var(--light);
+            font-size: 1.25rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Loader */
+        .loader {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .spinner::before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            margin-top: -30px;
+            margin-left: -30px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .supported-platforms {
+            margin-bottom: 2rem;
+        }
+
+        .platforms {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .platform-badge {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 0.75rem 1.5rem;
+            border-radius: 24px;
+            font-size: 0.875rem;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s;
+        }
+
+        .platform-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+            border-color: var(--primary);
+        }
+
+        /* Gemini Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--dark);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--glass-border);
+            animation: scaleIn 0.3s ease;
+        }
+
+        .modal h3 {
+            margin-bottom: 1.5rem;
+            color: var(--light);
+        }
+
+        .modal textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .video-preview {
+                flex-direction: column;
+            }
+            
+            #thumbnail {
+                width: 100%;
+                height: auto;
+            }
+            
+            .glass-card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
+    <!-- Particles Background -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <!-- Logo SVG -->
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#8b5cf6"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGradient)" stroke-width="3"/>
+                    <path d="M 35 35 L 65 50 L 35 65 Z" fill="url(#logoGradient)"/>
+                    <circle cx="50" cy="50" r="35" fill="none" stroke="url(#logoGradient)" stroke-width="2" opacity="0.5"/>
+                </svg>
+                VideoAI Pro
+            </a>
+        </div>
+    </nav>
+
     <div class="container">
-        <header>
-            <h1>🎬 Video Downloader</h1>
-            <p>ดาวน์โหลดวิดีโอจาก YouTube, TikTok, Facebook และอื่นๆ</p>
+        <!-- Hero Section -->
+        <header class="hero">
+            <h1>ดาวน์โหลดวิดีโอ + AI</h1>
+            <p>ดาวน์โหลดวิดีโอจากทุกแพลตฟอร์ม พร้อมวิเคราะห์ด้วย Gemini AI</p>
         </header>
 
         <main>
-            <!-- ส่วนใส่ URL -->
-            <div class="input-section">
-                <input 
-                    type="url" 
-                    id="urlInput" 
-                    placeholder="วาง URL วิดีโอที่นี่ (เช่น https://www.tiktok.com/@username/video/...)"
-                    class="url-input"
-                >
-                <button id="checkBtn" class="btn btn-primary">
-                    ตรวจสอบวิดีโอ
-                </button>
-            </div>
+            <!-- Main Card -->
+            <div class="glass-card">
+                <!-- Input Section -->
+                <div class="input-section">
+                    <input 
+                        type="url" 
+                        id="urlInput" 
+                        placeholder="วาง URL วิดีโอที่นี่ (YouTube, TikTok, Facebook...)"
+                        class="url-input"
+                    >
+                    <button id="checkBtn" class="btn btn-primary">
+                        🔍 ตรวจสอบวิดีโอ
+                    </button>
+                </div>
 
-            <!-- แสดงสถานะ -->
-            <div id="status" class="status hidden"></div>
+                <!-- Status -->
+                <div id="status" class="status hidden"></div>
 
-            <!-- แสดงข้อมูลวิดีโอ -->
-            <div id="videoInfo" class="video-info hidden">
-                <div class="video-preview">
-                    <img id="thumbnail" src="" alt="Video thumbnail">
-                    <div class="video-details">
-                        <h3 id="videoTitle"></h3>
-                        <p>แพลตฟอร์ม: <span id="platform"></span></p>
-                        <p>ความยาว: <span id="duration"></span></p>
+                <!-- Video Info -->
+                <div id="videoInfo" class="video-info hidden">
+                    <div class="video-preview">
+                        <img id="thumbnail" src="" alt="Video thumbnail">
+                        <div class="video-details">
+                            <h3 id="videoTitle"></h3>
+                            <p>
+                                <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l4 2A1 1 0 0020 14V6a1 1 0 00-1.447-.894l-4 2z"/>
+                                </svg>
+                                แพลตฟอร์ม: <span id="platform"></span>
+                            </p>
+                            <p>
+                                <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                </svg>
+                                ความยาว: <span id="duration"></span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="download-options">
+                        <h4>เลือกสิ่งที่ต้องการ:</h4>
+                        <div class="action-buttons">
+                            <button class="btn btn-download" data-quality="best">
+                                📹 ดาวน์โหลดวิดีโอ (คุณภาพดีที่สุด)
+                            </button>
+                            <button class="btn btn-download" data-quality="audio">
+                                🎵 ดาวน์โหลดเสียง (MP3)
+                            </button>
+                            <button class="btn btn-gemini" id="analyzeBtn">
+                                ✨ วิเคราะห์ด้วย Gemini AI
+                            </button>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="download-options">
-                    <h4>เลือกคุณภาพ:</h4>
-                    <div class="quality-buttons">
-                        <button class="btn btn-download" data-quality="best">
-                            📹 วิดีโอคุณภาพดีที่สุด
-                        </button>
-                        <button class="btn btn-download" data-quality="audio">
-                            🎵 เฉพาะเสียง (MP3)
-                        </button>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Loading spinner -->
-            <div id="loader" class="loader hidden">
-                <div class="spinner"></div>
-                <p>กำลังประมวลผล...</p>
+                <!-- Loader -->
+                <div id="loader" class="loader hidden">
+                    <div class="spinner"></div>
+                    <p>กำลังประมวลผล...</p>
+                </div>
             </div>
         </main>
 
         <footer>
             <div class="supported-platforms">
-                <h4>รองรับแพลตฟอร์ม:</h4>
+                <h4>รองรับแพลตฟอร์มยอดนิยม</h4>
                 <div class="platforms">
-                    <span class="platform-badge">YouTube</span>
-                    <span class="platform-badge">TikTok</span>
-                    <span class="platform-badge">Facebook</span>
-                    <span class="platform-badge">Instagram</span>
-                    <span class="platform-badge">Twitter/X</span>
+                    <span class="platform-badge">📺 YouTube</span>
+                    <span class="platform-badge">🎵 TikTok</span>
+                    <span class="platform-badge">📘 Facebook</span>
+                    <span class="platform-badge">📷 Instagram</span>
+                    <span class="platform-badge">🐦 Twitter/X</span>
+                    <span class="platform-badge">🎬 และอื่นๆ 100+</span>
                 </div>
             </div>
-            <p class="disclaimer">
-                ⚠️ โปรดเคารพลิขสิทธิ์และใช้เพื่อการศึกษาเท่านั้น
+            <p style="opacity: 0.7; margin-top: 2rem;">
+                ⚠️ กรุณาเคารพลิขสิทธิ์และใช้เพื่อการศึกษาเท่านั้น
             </p>
         </footer>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Gemini Modal -->
+    <div id="geminiModal" class="modal">
+        <div class="modal-content">
+            <h3>🤖 ส่งวิดีโอไปวิเคราะห์ด้วย Gemini AI</h3>
+            <p style="margin-bottom: 1rem; opacity: 0.8;">ใส่คำถามหรือสิ่งที่ต้องการให้ AI วิเคราะห์:</p>
+            <textarea id="geminiPrompt" placeholder="เช่น: สรุปเนื้อหาวิดีโอนี้, วิเคราะห์อารมณ์ของผู้พูด, แปลคำบรรยาย..."></textarea>
+            <div class="modal-buttons">
+                <button class="btn" onclick="closeGeminiModal()" style="background: rgba(255,255,255,0.1);">ยกเลิก</button>
+                <button class="btn btn-primary" onclick="sendToGemini()">ส่งวิเคราะห์</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create animated particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 20 + 20) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Initialize particles
+        createParticles();
+
+        // Global variables
+        let currentVideoUrl = '';
+        let currentVideoInfo = null;
+
+        // DOM Elements
+        const urlInput = document.getElementById('urlInput');
+        const checkBtn = document.getElementById('checkBtn');
+        const status = document.getElementById('status');
+        const videoInfo = document.getElementById('videoInfo');
+        const loader = document.getElementById('loader');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+
+        // Event Listeners
+        checkBtn.addEventListener('click', checkVideo);
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkVideo();
+        });
+        analyzeBtn.addEventListener('click', openGeminiModal);
+
+        // Check video function
+        async function checkVideo() {
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                showStatus('กรุณาใส่ URL วิดีโอ', 'error');
+                return;
+            }
+            
+            if (!isValidUrl(url)) {
+                showStatus('URL ไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง', 'error');
+                return;
+            }
+            
+            currentVideoUrl = url;
+            
+            showLoader(true);
+            hideStatus();
+            hideVideoInfo();
+            
+            try {
+                const response = await fetch('/api/video-info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentVideoInfo = result.data;
+                    showVideoInfo(result.data);
+                    showStatus('✅ พบวิดีโอแล้ว! เลือกสิ่งที่ต้องการทำ', 'success');
+                } else {
+                    showStatus(result.error || 'ไม่สามารถดึงข้อมูลวิดีโอได้', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
+            } finally {
+                showLoader(false);
+            }
+        }
+
+        // Show video info
+        function showVideoInfo(data) {
+            document.getElementById('thumbnail').src = data.thumbnail || 'https://via.placeholder.com/280x160?text=No+Thumbnail';
+            document.getElementById('videoTitle').textContent = data.title;
+            document.getElementById('platform').textContent = data.platform;
+            document.getElementById('duration').textContent = formatDuration(data.duration);
+            
+            videoInfo.classList.remove('hidden');
+            
+            const downloadBtns = document.querySelectorAll('.btn-download');
+            downloadBtns.forEach(btn => {
+                btn.onclick = () => downloadVideo(btn.dataset.quality);
+            });
+        }
+
+        // Download video
+        async function downloadVideo(quality) {
+            if (!currentVideoUrl) {
+                showStatus('กรุณาตรวจสอบวิดีโอก่อนดาวน์โหลด', 'error');
+                return;
+            }
+            
+            showLoader(true);
+            showStatus('⏳ กำลังเตรียมดาวน์โหลด... อาจใช้เวลาสักครู่', 'success');
+            
+            try {
+                const response = await fetch('/api/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: currentVideoUrl,
+                        quality: quality
+                    })
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `video_${Date.now()}.${quality === 'audio' ? 'mp3' : 'mp4'}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(downloadUrl);
+                    
+                    showStatus('✅ ดาวน์โหลดสำเร็จ!', 'success');
+                } else {
+                    const error = await response.json();
+                    showStatus(error.error || 'ไม่สามารถดาวน์โหลดได้', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                showStatus('เกิดข้อผิดพลาดในการดาวน์โหลด', 'error');
+            } finally {
+                showLoader(false);
+            }
+        }
+
+        // Gemini integration
+        function openGeminiModal() {
+            if (!currentVideoInfo) {
+                showStatus('กรุณาตรวจสอบวิดีโอก่อน', 'error');
+                return;
+            }
+            document.getElementById('geminiModal').style.display = 'block';
+        }
+
+        function closeGeminiModal() {
+            document.getElementById('geminiModal').style.display = 'none';
+        }
+
+        async function sendToGemini() {
+            const prompt = document.getElementById('geminiPrompt').value.trim();
+            if (!prompt) {
+                alert('กรุณาใส่คำถามหรือคำสั่งสำหรับ AI');
+                return;
+            }
+
+            // สร้าง URL สำหรับ Gemini
+            // หมายเหตุ: ผู้ใช้ต้องมี API key ของ Gemini
+            const geminiUrl = `https://aistudio.google.com/app/prompts/new_chat`;
+            const message = `วิเคราะห์วิดีโอนี้: ${currentVideoUrl}\n\nชื่อ: ${currentVideoInfo.title}\nแพลตฟอร์ม: ${currentVideoInfo.platform}\nความยาว: ${formatDuration(currentVideoInfo.duration)}\n\nคำถาม/คำสั่ง: ${prompt}`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(message).then(() => {
+                alert('คัดลอกข้อมูลแล้ว! กำลังเปิด Gemini AI...\n\nวางข้อความที่คัดลอกใน Gemini เพื่อเริ่มการวิเคราะห์');
+                window.open(geminiUrl, '_blank');
+                closeGeminiModal();
+            });
+        }
+
+        // Utility functions
+        function isValidUrl(string) {
+            try {
+                const url = new URL(string);
+                const supportedDomains = [
+                    'youtube.com', 'youtu.be',
+                    'tiktok.com',
+                    'facebook.com', 'fb.watch',
+                    'instagram.com',
+                    'twitter.com', 'x.com'
+                ];
+                
+                return supportedDomains.some(domain => url.hostname.includes(domain));
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return 'ไม่ทราบ';
+            
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function showStatus(message, type) {
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.classList.remove('hidden');
+        }
+
+        function hideStatus() {
+            status.classList.add('hidden');
+        }
+
+        function showLoader(show) {
+            if (show) {
+                loader.classList.remove('hidden');
+            } else {
+                loader.classList.add('hidden');
+            }
+        }
+
+        function hideVideoInfo() {
+            videoInfo.classList.add('hidden');
+        }
+
+        // Check server status on load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                console.log('Server status:', data);
+            } catch (error) {
+                console.error('Server connection error:', error);
+                showStatus('ไม่สามารถเชื่อมต่อกับ server ได้', 'error');
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('geminiModal');
+            if (event.target == modal) {
+                closeGeminiModal();
+            }
+        }
+    </script>
 </body>
 </html>
