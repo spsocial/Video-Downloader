@@ -598,16 +598,16 @@
                     </div>
                     
                     <div class="download-options">
-                        <h4>Choose action:</h4>
+                        <h4>เลือกสิ่งที่ต้องการทำ:</h4>
                         <div class="action-buttons">
                             <button class="btn btn-download" data-quality="best">
-                                📹 Download Video (Best Quality)
+                                📹 ดาวน์โหลดวิดีโอ (คุณภาพดีที่สุด)
                             </button>
                             <button class="btn btn-download" data-quality="audio">
-                                🎵 Download Audio (MP3)
+                                🎵 ดาวน์โหลดเสียง (MP3)
                             </button>
                             <button class="btn btn-gemini" id="analyzeBtn">
-                                ✨ Analyze with Gemini AI
+                                ✨ วิเคราะห์ด้วย Gemini AI
                             </button>
                         </div>
                     </div>
@@ -642,8 +642,8 @@
     <!-- Gemini Modal -->
     <div id="geminiModal" class="modal">
         <div class="modal-content">
-            <h3>🤖 Analyze Video with Gemini AI</h3>
-            <p style="margin-bottom: 1rem; opacity: 0.8;">Choose what you want AI to do:</p>
+            <h3>🤖 วิเคราะห์วิดีโอด้วย Gemini AI</h3>
+            <p style="margin-bottom: 1rem; opacity: 0.8;">เลือกสิ่งที่ต้องการให้ AI ทำ:</p>
             
             <!-- Quick Options -->
             <div class="gemini-quick-options" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1rem;">
@@ -651,55 +651,55 @@
                     🎥 วิเคราะห์และสร้าง Prompt เลียนแบบ
                 </button>
                 <button class="quick-option-btn" onclick="setGeminiPrompt('Summarize this video content with key points and main ideas')">
-                    📝 Summarize Content
+                    📝 สรุปเนื้อหา
                 </button>
                 <button class="quick-option-btn" onclick="setGeminiPrompt('Analyze filming techniques, camera angles, lighting, colors, and editing style')">
-                    🎬 Analyze Techniques
+                    🎬 วิเคราะห์เทคนิค
                 </button>
                 <button class="quick-option-btn" onclick="setGeminiPrompt('Create storyboard with 10 scenes from this video with descriptions')">
-                    📋 Create Storyboard
+                    📋 สร้างสตอรี่บอร์ด
                 </button>
                 <button class="quick-option-btn" onclick="setGeminiPrompt('Analyze what makes this video popular - hook, thumbnail, SEO strategies')">
-                    📊 Analyze Popularity
+                    📊 วิเคราะห์ความนิยม
                 </button>
                 <button class="quick-option-btn" onclick="setGeminiPrompt('Translate all speech/narration to Thai with context and meaning')">
-                    🌐 Translate Speech
+                    🌐 แปลคำพูด
                 </button>
                 <button class="quick-option-btn" onclick="setGeminiPrompt('Create 10 new video script variations based on this concept')">
-                    💡 Generate Scripts
+                    💡 สร้างสคริปต์
                 </button>
             </div>
             
-            <h4 style="margin: 1rem 0 0.5rem; color: #a5b4fc;">📺 Prompt Templates for Video Creation:</h4>
+            <h4 style="margin: 1rem 0 0.5rem; color: #a5b4fc;">📺 เทมเพลต Prompt สำหรับสร้างวิดีโอ:</h4>
             <div style="display: grid; gap: 8px; margin-bottom: 1rem;">
                 <button class="template-btn" onclick="setGeminiPrompt('Create detailed prompt for AI video generation:\n1. Analyze visual style, color grading, transitions\n2. Break down into 10-15 scenes with timestamps\n3. Suggest camera movements and angles\n4. Provide editing rhythm and pacing\n5. If there is narration, translate to Thai\n6. Give exact prompts for Runway ML Gen-2')">
-                    🎯 Runway ML Prompt
+                    🎯 Prompt สำหรับ Runway ML
                 </button>
                 <button class="template-btn" onclick="setGeminiPrompt('Create prompts for Midjourney/Stable Diffusion to make:\n1. Thumbnail similar to this video\n2. 5 key visuals from important scenes\n3. Style reference with parameters\n4. If text in images, translate to Thai')">
-                    🖼️ AI Image Prompt
+                    🖼️ Prompt สำหรับสร้างรูป AI
                 </button>
                 <button class="template-btn" onclick="setGeminiPrompt('Analyze and create:\n1. Shot list with duration for each scene\n2. B-roll footage needed\n3. Sound effects and BGM style\n4. Transition effects used\n5. Translate speech/subtitles to Thai')">
-                    🎞️ Production Guide
+                    🎞️ คู่มือการผลิต
                 </button>
             </div>
             
-            <textarea id="geminiPrompt" placeholder="Or type your own instructions..." style="min-height: 100px;"></textarea>
+            <textarea id="geminiPrompt" placeholder="หรือพิมพ์คำสั่งของคุณเอง..." style="min-height: 100px;"></textarea>
             
             <div style="margin: 1rem 0; padding: 1rem; background: rgba(236, 72, 153, 0.1); border-radius: 12px; border: 1px solid rgba(236, 72, 153, 0.3);">
                 <p style="margin: 0; font-size: 0.9rem; color: #f9a8d4;">
-                    🎬 <strong>How to use Gemini (Free):</strong><br>
-                    1. Download video first (max 10 minutes)<br>
-                    2. Click "Send to Gemini"<br>
-                    3. Upload video file in Gemini.google.com<br>
-                    4. Paste the copied prompt<br>
-                    <small style="opacity: 0.8;">💡 Tip: For long videos, trim to important parts only</small>
+                    🎬 <strong>วิธีใช้ Gemini (ฟรี):</strong><br>
+                    1. ดาวน์โหลดวิดีโอก่อน (สูงสุด 10 นาที)<br>
+                    2. คลิก "ส่งไปยัง Gemini"<br>
+                    3. อัปโหลดไฟล์วิดีโอใน Gemini.google.com<br>
+                    4. วาง prompt ที่คัดลอกไว้<br>
+                    <small style="opacity: 0.8;">💡 เคล็ดลับ: สำหรับวิดีโอยาว ให้ตัดเฉพาะส่วนสำคัญ</small>
                 </p>
             </div>
             
             <div class="modal-buttons">
-                <button class="btn" onclick="closeGeminiModal()" style="background: rgba(255,255,255,0.1);">Cancel</button>
+                <button class="btn" onclick="closeGeminiModal()" style="background: rgba(255,255,255,0.1);">ยกเลิก</button>
                 <button class="btn btn-primary" onclick="sendToGemini()">
-                    <span>🚀 Send to Gemini (Free!)</span>
+                    <span>🚀 ส่งไปยัง Gemini (ฟรี!)</span>
                 </button>
             </div>
         </div>
