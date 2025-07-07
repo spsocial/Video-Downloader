@@ -2,7 +2,7 @@
 nixPkgs = ["...", "python311", "yt-dlp", "ffmpeg"]
 
 [phases.build]
-cmds = ["npm install"]
+cmds = ["npm install", "yt-dlp -U"]
 
 [start]
 cmd = "node server.js"

@@ -634,8 +634,9 @@
                 </div>
             </div>
             <p style="opacity: 0.7; margin-top: 2rem;">
-                ⚠️ กรุณาเคารพลิขสิทธิ์และใช้เพื่อการศึกษาเท่านั้น
-            </p>
+    ⚠️ กรุณาเคารพลิขสิทธิ์และใช้เพื่อการศึกษาเท่านั้น<br>
+    💡 Facebook: ใช้ URL จากแถบที่อยู่ขณะเล่นวิดีโอ
+</p>
         </footer>
     </div>
 
@@ -843,12 +844,19 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    currentVideoInfo = result.data;
-                    showVideoInfo(result.data);
-                    showStatus('✅ พบวิดีโอแล้ว! เลือกสิ่งที่ต้องการทำ', 'success');
-                } else {
-                    showStatus(result.error || 'ไม่สามารถดึงข้อมูลวิดีโอได้', 'error');
-                }
+    currentVideoInfo = result.data;
+    showVideoInfo(result.data);
+    showStatus('✅ พบวิดีโอแล้ว! เลือกสิ่งที่ต้องการทำ', 'success');
+} else {
+    let errorMsg = result.error || 'ไม่สามารถดึงข้อมูลวิดีโอได้';
+    
+    // เพิ่มคำแนะนำสำหรับ Facebook
+    if (url.includes('facebook.com') && result.details && result.details.includes('Unsupported')) {
+        errorMsg += '\n\n💡 สำหรับ Facebook: ลองคัดลอก URL ใหม่จากแถบที่อยู่ขณะเล่นวิดีโอ';
+    }
+    
+    showStatus(errorMsg, 'error');
+}
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -1010,27 +1018,33 @@ ${prompt}
         }
 
         // Utility functions
-        function isValidUrl(string) {
-            try {
-                const url = new URL(string);
-                const supportedDomains = [
-                    'youtube.com', 'youtu.be',
-                    'tiktok.com',
-                    'facebook.com', 'fb.watch',
-                    'instagram.com',
-                    'twitter.com', 'x.com'
-                ];
-                
-                // ตรวจสอบ YouTube Shorts โดยเฉพาะ
-                if (url.hostname.includes('youtube.com') && url.pathname.includes('/shorts/')) {
-                    return true;
-                }
-                
-                return supportedDomains.some(domain => url.hostname.includes(domain));
-            } catch (_) {
-                return false;
-            }
+function isValidUrl(string) {
+    try {
+        const url = new URL(string);
+        const supportedDomains = [
+            'youtube.com', 'youtu.be',
+            'tiktok.com',
+            'facebook.com', 'fb.watch', 'fb.com',  // 👉 เพิ่ม 'fb.com'
+            'instagram.com',
+            'twitter.com', 'x.com'
+        ];
+        
+        // ตรวจสอบ YouTube Shorts โดยเฉพาะ
+        if (url.hostname.includes('youtube.com') && url.pathname.includes('/shorts/')) {
+            return true;
         }
+        
+        // 👉 เพิ่มส่วนนี้ใหม่ 3 บรรทัด
+        // ตรวจสอบ Facebook share links
+        if (url.hostname.includes('facebook.com') && url.pathname.includes('/share/')) {
+            return true;
+        }
+        
+        return supportedDomains.some(domain => url.hostname.includes(domain));
+    } catch (_) {
+        return false;
+    }
+}
 
         function formatDuration(seconds) {
             if (!seconds) return 'ไม่ทราบ';
@@ -1046,10 +1060,10 @@ ${prompt}
         }
 
         function showStatus(message, type) {
-            status.textContent = message;
-            status.className = `status ${type}`;
-            status.classList.remove('hidden');
-        }
+    status.innerHTML = message.replace(/\n/g, '<br>');  // 👉 เปลี่ยนจาก textContent เป็น innerHTML
+    status.className = `status ${type}`;
+    status.classList.remove('hidden');
+}
 
         function hideStatus() {
             status.classList.add('hidden');
