@@ -82,17 +82,24 @@ app.post('/api/video-info', async (req, res) => {
             noWarnings: true,
             preferFreeFormats: true,
             addHeader: [
-                'referer:' + (url.includes('facebook.com') ? 'facebook.com' : 'youtube.com'),
+                'referer:https://www.facebook.com/',
                 'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             ]
         };
         
-        // เพิ่ม cookies สำหรับ Facebook
+        // เพิ่ม options พิเศษสำหรับ Facebook
         if (url.includes('facebook.com')) {
             console.log('เพิ่ม options สำหรับ Facebook');
             options.format = 'best';
-            // บางครั้ง Facebook ต้องการ cookies
-            // options.cookies = 'cookies.txt'; // ถ้ามีไฟล์ cookies
+            options.noPlaylist = true;
+            // ลองใช้ extractor args สำหรับ Facebook
+            options.extractorArgs = 'facebook:player_url=https://www.facebook.com';
+            // เพิ่ม headers เพิ่มเติม
+            options.addHeader = [
+                'referer:https://www.facebook.com/',
+                'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'accept-language:en-US,en;q=0.9'
+            ];
         }
         
         // ถ้าเป็น YouTube Shorts
@@ -105,6 +112,11 @@ app.post('/api/video-info', async (req, res) => {
         
         // ดึงข้อมูลวิดีโอ
         const info = await youtubedl(url, options);
+
+        // ตรวจสอบว่ามีข้อมูลหรือไม่
+        if (!info) {
+            throw new Error('ไม่สามารถดึงข้อมูลวิดีโอได้');
+        }
 
         // ส่งข้อมูลกลับ
         res.json({
@@ -132,6 +144,8 @@ app.post('/api/video-info', async (req, res) => {
             errorMessage = 'วิดีโอนี้ไม่พร้อมใช้งาน อาจถูกลบหรือเป็นส่วนตัว';
         } else if (error.message.includes('429')) {
             errorMessage = 'ถูกจำกัดการเข้าถึง กรุณารอสักครู่แล้วลองใหม่';
+        } else if (url.includes('facebook.com')) {
+            errorMessage = 'ไม่สามารถดึงข้อมูลจาก Facebook ได้ วิดีโอนี้อาจเป็นส่วนตัวหรือต้องการการล็อกอิน\n\nวิธีแก้ไข:\n1. ตรวจสอบว่าวิดีโอเป็นสาธารณะ\n2. ลองคัดลอก URL ใหม่จากแถบที่อยู่ขณะเปิดวิดีโอ\n3. หากเป็นวิดีโอใน Page/Group ส่วนตัว จะไม่สามารถดาวน์โหลดได้';
         }
         
         res.status(500).json({
@@ -191,7 +205,13 @@ app.post('/api/download', async (req, res) => {
         // เพิ่ม option พิเศษสำหรับ Facebook
         if (url.includes('facebook.com')) {
             options.noPlaylist = true;
-            // options.cookies = 'cookies.txt'; // ถ้ามีไฟล์ cookies
+            options.extractorArgs = 'facebook:player_url=https://www.facebook.com';
+            // เพิ่ม headers เพิ่มเติม
+            options.addHeader = [
+                'referer:https://www.facebook.com/',
+                'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'accept-language:en-US,en;q=0.9'
+            ];
         }
         
         console.log('Download options:', JSON.stringify(options, null, 2));

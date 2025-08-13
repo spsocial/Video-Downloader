@@ -55,7 +55,12 @@ async function checkVideo() {
             showVideoInfo(result.data);
             showStatus('พบวิดีโอแล้ว! เลือกคุณภาพที่ต้องการดาวน์โหลด', 'success');
         } else {
-            showStatus(result.error || 'ไม่สามารถดึงข้อมูลวิดีโอได้', 'error');
+            let errorMessage = result.error || 'ไม่สามารถดึงข้อมูลวิดีโอได้';
+            // เพิ่มคำแนะนำสำหรับ Facebook
+            if (url.includes('facebook.com') && result.details) {
+                errorMessage += '\n\nคำแนะนำ: ลองใช้ URL จากแถบที่อยู่ของเบราว์เซอร์ขณะเปิดวิดีโอ หรือวิดีโอนี้อาจเป็นส่วนตัว';
+            }
+            showStatus(errorMessage, 'error');
         }
         
     } catch (error) {
