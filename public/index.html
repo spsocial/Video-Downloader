@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#0a0a0f">
     <title>VideoAI Pro (Prompt D) - ดาวน์โหลดและวิเคราะห์วิดีโอด้วย AI</title>
     <style>
         * {
@@ -29,12 +31,15 @@
 
         body {
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: radial-gradient(circle at 20% 80%, #0f0c29 0%, #24243e 50%, #302b63 100%);
+            background: #0a0a0f;
+            background-image: radial-gradient(circle at 20% 80%, #0f0c29 0%, #24243e 50%, #302b63 100%);
             background-attachment: fixed;
             min-height: 100vh;
             color: var(--light);
             overflow-x: hidden;
             position: relative;
+            -webkit-text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* Neural network background */
@@ -231,16 +236,14 @@
 
         /* Enhanced Glass Card */
         .glass-card {
-            background: linear-gradient(135deg, 
+            background: rgba(26, 26, 46, 0.95);
+            background-image: linear-gradient(135deg, 
                 rgba(255, 255, 255, 0.12) 0%, 
                 rgba(255, 255, 255, 0.08) 100%);
             backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
             border-radius: 32px;
-            border: 2px solid;
-            border-image: linear-gradient(135deg, 
-                rgba(0, 212, 255, 0.3), 
-                rgba(139, 92, 246, 0.3), 
-                rgba(236, 72, 153, 0.3)) 1;
+            border: 2px solid rgba(255, 255, 255, 0.15);
             padding: 3rem;
             margin-bottom: 2rem;
             box-shadow: 
@@ -250,6 +253,12 @@
             animation: fadeInUp 1s ease 0.2s backwards;
             position: relative;
             overflow: hidden;
+        }
+        
+        @supports not (backdrop-filter: blur(25px)) {
+            .glass-card {
+                background: rgba(26, 26, 46, 0.98);
+            }
         }
 
         .glass-card::before {
@@ -698,8 +707,24 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            body::before {
+                display: none;
+            }
+            
+            .particles {
+                display: none;
+            }
+            
             .hero h1 {
                 font-size: 2.5rem;
+                background: linear-gradient(135deg, var(--primary) 0%, var(--ai-purple) 100%);
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+            
+            .hero::before {
+                display: none;
             }
             
             .input-section {
@@ -717,6 +742,21 @@
             
             .glass-card {
                 padding: 1.5rem;
+                background: rgba(26, 26, 46, 0.98);
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+            }
+            
+            .navbar {
+                background: rgba(10, 10, 15, 0.95);
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+            }
+            
+            .modal-content {
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                background: rgba(10, 10, 15, 0.98);
             }
         }
 
