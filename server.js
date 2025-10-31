@@ -113,14 +113,11 @@ app.post('/api/video-info', async (req, res) => {
         // เพิ่ม options พิเศษสำหรับ YouTube
         if (url.includes('youtube.com') || url.includes('youtu.be')) {
             console.log('เพิ่ม options สำหรับ YouTube');
-            // ใช้ cookies จาก browser เพื่อหลีกเลี่ยงการตรวจจับ bot
-            try {
-                options.cookiesFromBrowser = 'chrome';
-            } catch (e) {
-                console.log('ไม่สามารถใช้ cookies จาก Chrome ได้');
-            }
-            // เพิ่ม extractor args สำหรับ YouTube
-            options.extractorArgs = 'youtube:player_client=web';
+            // ใช้ player client ที่หลีกเลี่ยง bot detection ได้ดีกว่า
+            options.extractorArgs = 'youtube:player_client=android,web;player_skip=configs,webpage';
+            // เพิ่ม options เพื่อหลีกเลี่ยง age gate และ bot detection
+            options.noCheckCertificates = true;
+            options.skipDownload = false;
         }
 
         // เพิ่ม options พิเศษสำหรับ Facebook
@@ -219,14 +216,11 @@ app.post('/api/download', async (req, res) => {
         // เพิ่ม options พิเศษสำหรับ YouTube
         if (url.includes('youtube.com') || url.includes('youtu.be')) {
             console.log('เพิ่ม options สำหรับ YouTube');
-            // ใช้ cookies จาก browser เพื่อหลีกเลี่ยงการตรวจจับ bot
-            try {
-                options.cookiesFromBrowser = 'chrome';
-            } catch (e) {
-                console.log('ไม่สามารถใช้ cookies จาก Chrome ได้');
-            }
-            // เพิ่ม extractor args สำหรับ YouTube
-            options.extractorArgs = 'youtube:player_client=web';
+            // ใช้ player client ที่หลีกเลี่ยง bot detection ได้ดีกว่า
+            options.extractorArgs = 'youtube:player_client=android,web;player_skip=configs,webpage';
+            // เพิ่ม options เพื่อหลีกเลี่ยง age gate และ bot detection
+            options.noCheckCertificates = true;
+            options.skipDownload = false;
         }
         
         // กำหนด format ตามคุณภาพที่เลือก
