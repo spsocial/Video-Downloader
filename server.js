@@ -107,12 +107,22 @@ app.post('/api/video-info', async (req, res) => {
             noCheckCertificates: true,
             noWarnings: true,
             preferFreeFormats: true,
-            addHeader: [
-                'referer:https://www.facebook.com/',
-                'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            ]
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         };
-        
+
+        // เพิ่ม options พิเศษสำหรับ YouTube
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            console.log('เพิ่ม options สำหรับ YouTube');
+            // ใช้ cookies จาก browser เพื่อหลีกเลี่ยงการตรวจจับ bot
+            try {
+                options.cookiesFromBrowser = 'chrome';
+            } catch (e) {
+                console.log('ไม่สามารถใช้ cookies จาก Chrome ได้');
+            }
+            // เพิ่ม extractor args สำหรับ YouTube
+            options.extractorArgs = 'youtube:player_client=web';
+        }
+
         // เพิ่ม options พิเศษสำหรับ Facebook
         if (url.includes('facebook.com')) {
             console.log('เพิ่ม options สำหรับ Facebook');
@@ -123,7 +133,6 @@ app.post('/api/video-info', async (req, res) => {
             // เพิ่ม headers เพิ่มเติม
             options.addHeader = [
                 'referer:https://www.facebook.com/',
-                'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'accept-language:en-US,en;q=0.9'
             ];
         }
@@ -204,11 +213,21 @@ app.post('/api/download', async (req, res) => {
             output: outputPath,
             noCheckCertificates: true,
             noWarnings: true,
-            addHeader: [
-                'referer:' + (url.includes('facebook.com') ? 'facebook.com' : 'youtube.com'),
-                'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            ]
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         };
+
+        // เพิ่ม options พิเศษสำหรับ YouTube
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            console.log('เพิ่ม options สำหรับ YouTube');
+            // ใช้ cookies จาก browser เพื่อหลีกเลี่ยงการตรวจจับ bot
+            try {
+                options.cookiesFromBrowser = 'chrome';
+            } catch (e) {
+                console.log('ไม่สามารถใช้ cookies จาก Chrome ได้');
+            }
+            // เพิ่ม extractor args สำหรับ YouTube
+            options.extractorArgs = 'youtube:player_client=web';
+        }
         
         // กำหนด format ตามคุณภาพที่เลือก
         if (quality === 'audio') {
@@ -232,7 +251,6 @@ app.post('/api/download', async (req, res) => {
             // เพิ่ม headers เพิ่มเติม
             options.addHeader = [
                 'referer:https://www.facebook.com/',
-                'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'accept-language:en-US,en;q=0.9'
             ];
         }
