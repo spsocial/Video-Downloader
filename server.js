@@ -113,8 +113,10 @@ app.post('/api/video-info', async (req, res) => {
         // เพิ่ม options พิเศษสำหรับ YouTube
         if (url.includes('youtube.com') || url.includes('youtu.be')) {
             console.log('เพิ่ม options สำหรับ YouTube');
-            // ใช้ player client ที่หลีกเลี่ยง bot detection ได้ดีกว่า
-            options.extractorArgs = 'youtube:player_client=android';
+            // ใช้ ios client ที่หลีกเลี่ยง bot detection ได้ดีที่สุด
+            options.extractorArgs = 'youtube:player_client=ios';
+            // ปิดการตรวจสอบที่ไม่จำเป็น
+            options.noPlaylist = true;
         }
 
         // เพิ่ม options พิเศษสำหรับ Facebook
@@ -213,8 +215,10 @@ app.post('/api/download', async (req, res) => {
         // เพิ่ม options พิเศษสำหรับ YouTube
         if (url.includes('youtube.com') || url.includes('youtu.be')) {
             console.log('เพิ่ม options สำหรับ YouTube');
-            // ใช้ player client ที่หลีกเลี่ยง bot detection ได้ดีกว่า
-            options.extractorArgs = 'youtube:player_client=android';
+            // ใช้ ios client ที่หลีกเลี่ยง bot detection ได้ดีที่สุด
+            options.extractorArgs = 'youtube:player_client=ios';
+            // ปิดการตรวจสอบที่ไม่จำเป็น
+            options.noPlaylist = true;
         }
         
         // กำหนด format ตามคุณภาพที่เลือก
